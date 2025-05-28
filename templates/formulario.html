@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Precio de Bicicletas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+        }
+        .slider-value {
+            margin-left: 10px;
+            min-width: 50px;
+            text-align: center;
+        }
+        input[type="range"] {
+            flex-grow: 1;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            display: none;
+        }
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        .loading {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculadora de Precio de Bicicletas</h1>
+    
+    <form id="bikeForm">
+        <div class="form-group">
+            <label for="bike_brand">Marca de la bicicleta:</label>
+            <select id="bike_brand" name="bike_brand" required>
+                <option value="Giant">Giant</option>
+                <option value="Specialized">Specialized</option>
+                <option value="Trek">Trek</option>
+                <option value="Scott">Scott</option>
+                <option value="Cannondale">Cannondale</option>
+                <option value="Canyon">Canyon</option>
+                <option value="Cube">Cube</option>
+                <option value="Merida">Merida</option>
+                <option value="Orbea">Orbea</option>
+                <option value="BH">BH</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="frame_material">Material del cuadro:</label>
+            <select id="frame_material" name="frame_material" required>
+                <option value="1">Carbono</option>
+                <option value="0">Aluminio</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="gear_count">Número de velocidades:</label>
+            <div class="slider-container">
+                <input type="range" id="gear_count" name="gear_count" min="6" max="30" value="12" class="slider">
+                <span id="gear_count_value" class="slider-value">12</span>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="weight_kg">Peso (kg):</label>
+            <div class="slider-container">
+                <input type="range" id="weight_kg" name="weight_kg" min="6" max="11" step="0.1" value="8.5" class="slider">
+                <span id="weight_kg_value" class="slider-value">8.5</span>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="year">Año del modelo:</label>
+            <div class="slider-container">
+                <input type="range" id="year" name="year" min="2010" max="2025" value="2021" class="slider">
+                <span id="year_value" class="slider-value">2021</span>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="gear_brand">Marca del cambio de marchas:</label>
+            <select id="gear_brand" name="gear_brand" required>
+                <option value="Shimano">Shimano</option>
+                <option value="SRAM">SRAM</option>
+                <option value="Campagnolo">Campagnolo</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="wheel_diameter_mm">Diámetro de rueda (mm):</label>
+            <div class="slider-container">
+                <input type="range" id="wheel_diameter_mm" name="wheel_diameter_mm" min="680" max="730" value="700" class="slider">
+                <span id="wheel_diameter_mm_value" class="slider-value">700</span>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="electronic_shifting">Cambio electrónico:</label>
+            <select id="electronic_shifting" name="electronic_shifting" required>
+                <option value="1">Sí</option>
+                <option value="0">No</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="brake_type">Tipo de frenos:</label>
+            <select id="brake_type" name="brake_type" required>
+                <option value="1">Disco</option>
+                <option value="0">Rim/Caliper</option>
+            </select>
+        </div>
+        
+        <button type="button" onclick="calculatePrice()">Calcular Precio</button>
+    </form>
+    
+    <div id="loading" class="loading">Calculando precio...</div>
+
+    <div id="result">
+        <h2>Precio estimado:</h2>
+        <p class="price" id="predicted_price"></p>
+    </div>
+    
+    <script>
+        // Actualizar valores de los sliders
+        document.getElementById('gear_count').addEventListener('input', function() {
+            document.getElementById('gear_count_value').textContent = this.value;
+        });
+        
+        document.getElementById('weight_kg').addEventListener('input', function() {
+            document.getElementById('weight_kg_value').textContent = this.value;
+        });
+        
+        document.getElementById('year').addEventListener('input', function() {
+            document.getElementById('year_value').textContent = this.value;
+        });
+        
+        document.getElementById('wheel_diameter_mm').addEventListener('input', function() {
+            document.getElementById('wheel_diameter_mm_value').textContent = this.value;
+        });
+        
+        function calculatePrice() {
+        const form = document.getElementById('bikeForm');
+        const resultDiv = document.getElementById('result');
+        const loadingDiv = document.getElementById('loading');
+        
+        // Mostrar carga y ocultar resultados anteriores
+        loadingDiv.style.display = 'block';
+        resultDiv.style.display = 'none';
+    const formData = {
+        bike_brand: document.getElementById('bike_brand').value,
+        frame_material: parseInt(document.getElementById('frame_material').value),
+        gear_count: parseInt(document.getElementById('gear_count').value),
+        weight_kg: parseFloat(document.getElementById('weight_kg').value),
+        year: parseInt(document.getElementById('year').value),
+        wheel_diameter_mm: parseInt(document.getElementById('wheel_diameter_mm').value),
+        electronic_shifting: parseInt(document.getElementById('electronic_shifting').value),
+        brake_type: parseInt(document.getElementById('brake_type').value),
+        gear_brand: document.getElementById('gear_brand').value
+    };
+
+    console.log("Enviando datos:", formData);
+
+    fetch('/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        loadingDiv.style.display = 'none';
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || 'Error del servidor'); });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (!data.predicted_price) {
+            throw new Error('La respuesta no contiene el precio');
+        }
+        document.getElementById('predicted_price').textContent = 
+            data.predicted_price.toLocaleString('es-ES', {
+                style: 'currency',
+                currency: 'EUR'
+            });
+        resultDiv.style.display = 'block';
+    })
+    .catch(error => {
+        loadingDiv.style.display = 'none';
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+    });
+}
+    </script>
+</body>
+</html>
