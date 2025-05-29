@@ -17,6 +17,9 @@ try:
 except Exception as e:
     print(f"Error cargando el modelo: {e}")
     model = None
+    drop_first = True  # <-- Asigna un valor por defecto (True o False según tu lógica)
+    original_columns = []  # <-- También inicializa estas variables para evitar otros errores
+    categorical_mapping = {}
 
 # Ruta principal que sirve el formulario HTML
 @app.route('/')
