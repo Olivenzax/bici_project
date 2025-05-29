@@ -8,7 +8,7 @@ CORS(app)  # Habilita CORS para todas las rutas
 
 # Cargar el modelo
 try:
-    with open('modelo_bicicletas.pkl', 'rb') as f:
+    with open('/home/olimil/bici_project/modelo_bicicletas.pkl', 'rb') as f:
         model_data = pickle.load(f)
     model = model_data['model']
     original_columns = model_data['original_columns']
